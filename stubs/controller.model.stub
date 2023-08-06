@@ -1,0 +1,27 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedModel }};
+use App\Http\Controllers\RepoController;
+use App\Http\Requests\Back\Create{{ model }}Request;
+use App\Http\Requests\Back\Edit{{ model }}Request;
+use App\Repository\Contracts\I{{ model }}Repository;
+
+class {{ class }} extends RepoController
+{
+    public function __construct(I{{ model }}Repository $repository)
+    {
+        parent::__construct($repository);
+    }
+
+    public function store(Create{{ model }}Request $request)
+    {
+        return self::repo()->store($request);
+    }
+
+    public function update(Edit{{ model }}Request $request, {{ model }} ${{ modelVariable }})
+    {
+        return self::repo()->update($request, ${{ modelVariable }});
+    }
+}

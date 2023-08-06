@@ -1,0 +1,31 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Casts\Status;
+use App\Http\Traits\{{ class }}Trait;
+use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class {{ class }} extends Model
+{
+    use HasFactory, SoftDeletes, Translatable, {{ class }}Trait;
+
+    public int $cols = 5;
+
+    protected $guarded = ['id'];
+
+    public $translationModel = {{ class }}Translation::class;
+
+    public $translationForeignKey = '{{ model }}_id';
+
+    public array $translatedAttributes = ['name'];
+
+    protected $casts = ['status' => Status::class];
+
+    public array $fields = [
+        ['name' => 'name', 'type' => 'text', 'trans' => 'back.form-name'],
+    ];
+}

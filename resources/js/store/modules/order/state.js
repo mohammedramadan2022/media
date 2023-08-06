@@ -1,0 +1,56 @@
+export default {
+    pagination: {
+        last_page: 0,
+        currentPage: 0
+    },
+    has_pagination: false,
+    has_order_filter_pagination: false,
+    allOrders: [],
+    filter: 'all',
+    days: 0,
+    term: '',
+    undertaking: {
+        id: 0,
+        content: '',
+        status: '',
+    },
+    singleOrder: {
+        id: 0,
+        order_no: '',
+        order_status: '',
+        payment_status: '',
+        invoice_url: '',
+        address: {
+            address: '',
+            phone: '',
+        },
+        addresses: [],
+        products: [],
+        summary: {
+            coupon: '',
+            created_at: '',
+            currency: '',
+            delay_penalty: 0,
+            is_delay_paid: null,
+            delayed_days: 0,
+            discount: '',
+            end_date: '',
+            end_time: '',
+            payment_method: null,
+            start_date: '',
+            start_time: '',
+            total: '',
+            days: 0,
+            hours: 0,
+            type: '',
+            total_insurance: '',
+        },
+    },
+    orderSummaryDatesData: {
+        order_id: 0,
+        startDate: '',
+        startTime: '',
+        endDate: '',
+        endTime: ''
+    },
+};

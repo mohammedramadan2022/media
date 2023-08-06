@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Repository\Contracts;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+/**
+ * @method all()
+ * @method paginate()
+ * @method find($id)
+ * @method delete($id)
+ * @method forceDelete($id)
+ * @method index()
+ * @method trashed()
+ * @method restore($id)
+ * @method search($request)
+ * @method export()
+ */
+interface IProductRepository
+{
+    public function changeStatus(Request $request);
+
+    public function create();
+
+    public function store(Request $request);
+
+    public function getCategoriesBySectionId(Request $request);
+
+    public function getOptionsByCategoryId(Request $request);
+
+    public function edit($id);
+
+    public function update(Request $request, $currentModel);
+
+    public function accept(Product $product);
+
+    public function reject(Product $product);
+}

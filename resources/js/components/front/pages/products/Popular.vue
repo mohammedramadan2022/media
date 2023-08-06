@@ -1,0 +1,159 @@
+<script setup>
+import {computed} from "vue";
+import AppLayout from "@/components/front/layout/AppLayout";
+import {useStore} from "vuex";
+import SingleProduct from "@/components/front/includes/SingleProduct";
+import SectionsWithCategories from "@/components/front/includes/SectionsWithCategories";
+import {useGetImage} from "@/composables/useHelper";
+
+const store = useStore();
+
+store.dispatch('getPopularProducts');
+store.dispatch('getSectionWithCategories');
+
+let cities = computed(() => store.state.getAllCities);
+let allPopular = computed(() => store.state.product.allPopular);
+let sections = computed(() => store.state.product.sections);
+let pagination = computed(() => store.state.product.pagination);
+let has_pagination = computed(() => store.state.product.has_pagination);
+let has_filter_pagination = computed(() => store.state.product.has_filter_pagination);
+let has_category_pagination = computed(() => store.state.product.has_category_pagination);
+let has_popular_pagination = computed(() => store.state.product.has_popular_pagination);
+let filterData = computed(() => store.state.product.productsFilterData);
+
+function removeFromFave(product) {
+    store.dispatch('removeProductFromFavorites', product);
+    product.is_fave = false;
+}
+
+function addToFave(product) {
+    store.dispatch('addProductToFavorites', product);
+    product.is_fave = true;
+}
+</script>
+
+<template>
+    <app-layout>
+        <template #nav>
+            <li class="breadcrumb-item active">
+                <router-link :to="{name: 'popular-products'}" v-text="$t('message.popularProducts')"></router-link>
+            </li>
+        </template>
+
+        <!-- content -->
+        <section id="content">
+            <div class="container">
+                <div class="row gy-3 gy-xl-0">
+                    <!-- sections filter -->
+                    <div class="col-xl-3">
+                        <sections-with-categories :sections="sections">
+                            <router-link :to="{name: 'offers'}" class="offers">
+                                <img :src="useGetImage('front/assets/images/icons/offers.svg')" alt="offers icon" class="me-2">{{$t('message.offers')}}
+                            </router-link>
+                        </sections-with-categories>
+                    </div>
+
+                    <!-- main filter & data results -->
+                    <div class="col-xl-9">
+                        <!-- main filter -->
+                        <div class="main-filter-div">
+                            <form @submit.prevent="store.dispatch('getFilteredProducts')">
+                                <div class="row justify-content-end">
+                                    <div class="col-md-4 col-xl-4">
+                                        <div class="mb-3">
+                                            <label for="city" class="form-label" v-text="$t('message.city')"></label>
+                                            <select class="form-select" v-model="filterData.city_id" id="city">
+                                                <option selected value="" v-text="$t('message.all')"></option>
+                                                <option v-for="(city, index) in cities" :key="index" :value="city.id" v-text="city.text"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-xl-4">
+                                        <div class="mb-3">
+                                            <label for="start-date" class="form-label" v-text="$t('message.dateOfReceipt')"></label>
+                                            <input type="date" class="form-control" v-model="filterData.startDate" id="start-date">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-xl-4">
+                                        <div class="mb-3">
+                                            <label for="end-date" class="form-label" v-text="$t('message.dateOfDelivery')"></label>
+                                            <input type="date" class="form-control" v-model="filterData.endDate" id="end-date">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-xl-12">
+                                        <div class="mb-3">
+                                            <input type="text" name="term" v-model="filterData.term" class="form-control" :placeholder="$t('message.productName')">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-xl-2">
+                                        <button type="submit" @click="store.commit('setPaginationToFilter')" class="btn btn-primary-color w-100" v-text="$t('message.search')"></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- results info -->
+                        <div class="row text-center text-md-start justify-content-md-between align-items-center results-info">
+                            <div class="col-md-auto">
+                                <span class="results-count" v-text="$t('message.productsCountVar', {var: has_popular_pagination ? pagination.total : allPopular.length})"></span>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="row g-2 row-cols-auto justify-content-center align-items-center">
+                                    <div class="col"><span class="order-by" v-text="$t('message.sortBy')"></span></div>
+                                    <div class="col">
+                                        <select class="form-select" @change="store.commit('filterProducts', $event.target.value)">
+                                            <option value="" v-text="$t('message.chooseValue')"></option>
+                                            <option value="price_low_high" v-text="$t('message.lowPriceProducts')"></option>
+                                            <option value="price_high_low" v-text="$t('message.highPriceProducts')"></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col">
+                                        <input type="radio" class="btn-check display-way" name="display_way" value="grid" id="grid" autocomplete="off" checked>
+                                        <label class="btn btn-custom-radio" for="grid"><i class="fa-solid fa-grip"></i></label>
+                                    </div>
+                                    <div class="col">
+                                        <input type="radio" class="btn-check display-way" name="display_way" value="list" id="list" autocomplete="off">
+                                        <label class="btn btn-custom-radio" for="list"><i class="fa fa-list"></i></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- results data -->
+                        <div id="results-data" class="row g-3 row-cols-1 row-cols-md-2 row-cols-lg-3 results-data">
+                            <div class="col" v-for="(product, index) in allPopular" :key="index">
+                                <single-product @addToFave="addToFave(product)" @removeFromFave="removeFromFave(product)" :product="product" />
+                            </div>
+                        </div>
+
+                        <div class="row g-3 row-cols-1" v-if="allPopular.length === 0">
+                            <div class="alert alert-info text-center" v-text="$t('message.noProducts')"></div>
+                        </div>
+
+                        <!-- show getProductsNextPage more -->
+                        <div class="text-center" v-if="has_pagination && allPopular.length > 0">
+                            <a href="javascript:void(0);" @click.prevent="store.dispatch('getProductsNextPage')" class="show-more-link">
+                                {{$t('message.loadMore')}}<i class="fa fa-arrow-down ms-2"></i>
+                            </a>
+                        </div>
+
+                        <!-- show getFilteredProductsNextPage more -->
+                        <div class="text-center" v-if="has_filter_pagination && allPopular.length > 0">
+                            <a href="javascript:void(0);" @click.prevent="store.dispatch('getFilteredProductsNextPage')" class="show-more-link">
+                                {{$t('message.loadMore')}}<i class="fa fa-arrow-down ms-2"></i>
+                            </a>
+                        </div>
+
+                        <!-- show getCategoryProductsNextPage more -->
+                        <div class="text-center" v-if="has_popular_pagination && allPopular.length > 0">
+                            <a href="javascript:void(0);" @click.prevent="store.dispatch('getPopularsNextPage')" class="show-more-link">
+                                {{$t('message.loadMore')}}<i class="fa fa-arrow-down ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </app-layout>
+</template>

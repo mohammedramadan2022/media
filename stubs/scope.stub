@@ -1,0 +1,13 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Database\Eloquent\Builder;
+
+trait {{ class }}Scopes
+{
+    public function scopeSearch(Builder $query, $term): Builder
+    {
+        return $query;
+    }
+}

@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Scopes\{{ class }}Scopes;
+
+trait {{ class }}Trait
+{
+    use BasicTrait, {{ class }}Scopes;
+}
